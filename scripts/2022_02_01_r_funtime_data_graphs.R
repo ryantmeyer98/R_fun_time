@@ -45,7 +45,7 @@ mm.df$sa <- ((mm.df$diameter)/2)^2 * pi
 
 # Long Tidyverse approach
 mm.df <- mm.df %>% 
-  mutate(radius = diameter/s)
+  mutate(radius = diameter/2)
 
 mm.df <- mm.df %>% 
   mutate(sa = ((radius)/2)^2 * pi)
