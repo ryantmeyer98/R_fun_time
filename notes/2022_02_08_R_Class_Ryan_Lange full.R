@@ -163,3 +163,37 @@ plain.df %>%
     values = c("red", "green", "blue")) + 
   theme_yourname()
 
+
+# what if we wanted to make this a data set that has the left right center
+# as columns. Note that the distance from the central point differs slightly 
+# a few decimal places out. 
+# if we tried to match that it would not work well.
+# so lets assume that we are close enough on a meter by meter scale.
+# Lets round to the nearest meter - we could also do to the 10s if we wanted
+
+plain.df <- plain.df %>% 
+  mutate(distance_m = round(distance_m, 0))
+
+# now lets make it by column or wide format
+plain_wide.df <- plain.df %>% 
+  pivot_wider(
+    names_from = "name",
+    values_from = "elevation_m"
+  )
+
+# note the names are a mess - lets fix that
+plain_wide.df <- plain_wide.df %>% clean_names()
+
+# what if we wanted to make it long again and get rid of na values
+plain_long.df <- plain_wide.df %>% 
+  pivot_longer(cols = c(cottonwood_marble_canyon_l, cottonwood_marble_canyon_r,
+                        cottonwood_marble_canyon_c),
+               names_to = "name",
+               values_to = "elevation_m")
+  
+  
+  
+  
+  
+  
+  
