@@ -7,7 +7,7 @@
 install.packages("ggThemeAssist")
 install.packages("styler")
 
-# install packages in case you did not get tthem
+# install packages in case you did not get them
 install.packages("skimr")
 install.packages("janitor")
 install.packages("patchwork")
