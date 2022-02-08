@@ -24,7 +24,7 @@ library(janitor)
 library(patchwork)
 
 # Load the data 
-egg.df   <- read_csv("data/emily_harders/Experiment3_corttimecourse_datasheet_1Feb22 - Sheet9.csv") %>% 
+egg.df   <- read_excel("data/emily_harders/Emily_Rfuntime_7Feb22.xlsx") %>% 
   clean_names()
 
 # do you want to see quick summary stats?
