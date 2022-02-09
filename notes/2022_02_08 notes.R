@@ -1,33 +1,42 @@
-# Packages you likely already have installed, but in case you don't -----
+
+
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
+# WHAT DO? PRACTICE READING IN FILES, WIDE-LONG-WIDE FORMATTING, GRAPHING ----
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
+
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
+# LIBRARIES AND PACKAGES ----
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
+
+# Packages you likely already have installed, but in case you don't
 # Packages already installed
 # install.packages("tidyverse")
 # install.packages("readxl")
 
-# # Packages to install and run library one time
-# install.packages("ggThemeAssist")
-# install.packages("styler")
-# 
 # # install packages in case you did not get them
 # install.packages("skimr")
 # install.packages("janitor")
 # install.packages("patchwork")
 
-# on gg theme assist 
-# to use highlight the code you want to grach and select ggtheme assist from addins
-# addins can be found at the top center of the screen
+# # Packages to install and run library one time - these go in addins tab at the top
+# install.packages("ggThemeAssist")
+# install.packages("styler")
 
-# Load these libraries only once, like ever, until you reinstall R ----
+# Load these libraries only once, like ever, until you reinstall R
 library(ggThemeAssist)
 library(styler)
 
-# load Libraries that we use in all scripts -----
+# load Libraries that we use in all scripts 
 library(tidyverse)
 library(readxl)
 library(skimr)
 library(janitor)
 library(patchwork)
 
-# Read in the data 
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
+# READ IN THE DATA ----
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
+
 # do for left
 left.df   <- read_csv("data/ryan_lange/Cottonwood_Marble_Canyon_L.csv") %>% clean_names()
 # right
@@ -35,24 +44,37 @@ right.df  <- read_csv("data/ryan_lange/Cottonwood_Marble_Canyon_R.csv") %>% clea
 # center
 center.df <- read_csv("data/ryan_lange/Cottonwood_Marble_Canyon_C.csv") %>% clean_names()
 
-# note if you load these everything is capitalized and tough to type
-# janitor can clean up the names - add    
-#           %>% clean_names()
+# if you load these without clean_names() they may not be in the easiest format to use,
+# clean_names() is a janitor function that formats column headers to work better in R
+
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
+# STARTING OFF WITH A SIMPLE PLOT ----
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
 
 # making plots of elevation versus distance
+
+# left.df out front tells ggplot where to pull the data from, this is why we don't put it in
+# the ggplot statement
 left.df %>% 
   ggplot(aes(x= distance_m, y= elevation_m)) +
   geom_line()
 
-# if you have several data frame you want on one plot this is a way to do it,
+# if you have several data frames you want on one plot this is a way to do it,
 # but it is generally not a good thing to do as there are far better ways to do it 
+# you can state where to pull the data and what aesthetics you want associated with that data,
+# in the geom_XXX() statement
 ggplot() + 
   geom_line(data=left.df, aes(x=distance_m, y=elevation_m), color="black") +
   geom_line(data = center.df, aes(x=distance_m, y=elevation_m), color="blue") +
   geom_line(data = right.df, aes(x=distance_m, y=elevation_m), color="red")
 
-# Combine Files ---
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
+# COMBINING FILES WITH BIND_ROWS() ----
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
+
+# Combine Files
 # here we will bind the rows together top to bottom using bind_rows(dataframes to bind)
+# this just stats rows with the same column names on top of each other into a single data frame
 plain.df <- bind_rows(left.df, right.df, center.df)
   
 # now lets plot this
@@ -62,11 +84,15 @@ plain.df <- bind_rows(left.df, right.df, center.df)
   plain.df %>%
     ggplot(aes(x = distance_m, y = elevation_m, color = name, linetype = name)) +
     geom_line()
-  
+
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
+# MAKING PLOTS WITH OUR NEW BOUND ROW DATAFRAME ----
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
+
 # what if we want to define what color the line is?
 # can google ggplot colors to get the color codes 
   
-# in this code we haven't specified the legent so it gives us two separate legends 
+# in this code we haven't specified the length so it gives us two separate legends 
   plain.df %>%
     ggplot(aes(x = distance_m, y = elevation_m, color = name, linetype = name)) +
     geom_line() +
@@ -75,9 +101,56 @@ plain.df <- bind_rows(left.df, right.df, center.df)
         labels = c("Center", "Left", "Right"),
         values = c("red", "green", "blue"))
 
-  # now to add a layer of the labels of the graph
-  # command is labs=(x="stuff", y="stuff")
-  # + labs(x="",  y="")
+# but what if we want to combine the legends? add scale_linetype_manual and provide values
+# for linetype and we can combine the legends into one with both color and linetype
+  plain.df %>%
+    ggplot(aes(x = distance_m, y = elevation_m, color = name, linetype = name)) +
+    geom_line() +
+    scale_color_manual(
+      name = "Name of legend title",
+      labels = c("Center", "Left", "Right"),
+      values = c("red", "green", "blue")) +
+    scale_linetype_manual(
+      name = "Name of legend title",
+      labels = c("Center", "Left", "Right"),
+      values = c("solid", "longdash", "dotted"))
+  
+# now lets say we want to add labels for our axes, add: labs(x="stuff", y="stuff")
+  plain.df %>%
+    ggplot(aes(x = distance_m, y = elevation_m, color = name, linetype = name)) +
+    geom_line() +
+    scale_color_manual(
+      name = "Name of legend title",
+      labels = c("Center", "Left", "Right"),
+      values = c("red", "green", "blue")) +
+    scale_linetype_manual(
+      name = "Name of legend title",
+      labels = c("Center", "Left", "Right"),
+      values = c("solid", "longdash", "dotted")) +
+    labs(x = "distance m", y = "elevation m")
+
+# we can also save this plot with a name to call it up easier later, do this by feeding a name
+# through the code with name.plot <- code
+
+plain.plot <-  plain.df %>%
+    ggplot(aes(x = distance_m, y = elevation_m, color = name, linetype = name)) +
+    geom_line() +
+    scale_color_manual(
+      name = "Name of legend title",
+      labels = c("Center", "Left", "Right"),
+      values = c("red", "green", "blue")) +
+    scale_linetype_manual(
+      name = "Name of legend title",
+      labels = c("Center", "Left", "Right"),
+      values = c("solid", "longdash", "dotted")) +
+    labs(x = "distance m", y = "elevation m")
+
+# we can now call up the plot whenever we want put running the code for the plot
+plain.plot
+
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# USING GGTHEMEASSIST AND MAKING THEMES ----
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
 # now lets use ggThemeAssist to modify the graph to get all the factors changed
 # using ggtheme assist, highlight the code you want to work with,
