@@ -1,20 +1,20 @@
-# Install new packages -----
-# Packages already installed
-# install.packages("tidyverse")
-# install.packages("readxl")
-
-# Packages to install and run library one time
-install.packages("ggThemeAssist")
-install.packages("styler")
-
-# install packages in case you did not get them
-install.packages("skimr")
-install.packages("janitor")
-install.packages("patchwork")
-
-# Load these libraries only once ----
-library(ggThemeAssist)
-library(styler)
+# # Install new packages -----
+# # Packages already installed
+# # install.packages("tidyverse")
+# # install.packages("readxl")
+# 
+# # Packages to install and run library one time
+# install.packages("ggThemeAssist")
+# install.packages("styler")
+# 
+# # install packages in case you did not get them
+# install.packages("skimr")
+# install.packages("janitor")
+# install.packages("patchwork")
+# 
+# # Load these libraries only once ----
+# library(ggThemeAssist)
+# library(styler)
 
 # load Libraries that we use in all scripts -----
 library(tidyverse)
@@ -25,7 +25,7 @@ library(patchwork)
 
 # Load the data 
 # do for left
-left.df   <- read_csv("data/ryan_lange/Cottonwood_Marble_Canyon_L.csv") %>% clean_names()
+left.df   <- read_csv("data/ryan_lange/Cottonwood_Marble_Canyon_L.csv")   %>% clean_names()
 # right
 right.df  <- read_csv("data/ryan_lange/Cottonwood_Marble_Canyon_R.csv") %>% clean_names()
 # center
@@ -38,21 +38,23 @@ center.df <- read_csv("data/ryan_lange/Cottonwood_Marble_Canyon_C.csv") %>% clea
 
 # making plots of elevation versus distance
 left.df %>% 
-  ggplot( data=   , aes(x=,   y=  )) +
-  geom_xxx()
+  ggplot(  aes(x=distance_m,   y=elevation_m  )) +
+  geom_line()
 
 # now how can we plot all three lines on one graph
 # it is possible - but it is a pain - see this mess
   ggplot() + 
-    geom_line(data=left.df, aes(x=distance_m, y=elevation_m), color="black")
+    geom_line(data=left.df, aes(x=distance_m, y=elevation_m), color="black") +
+    geom_line(data=right.df, aes(x=distance_m, y=elevation_m), color="blue")
 
 # Combine Files ---
 # here we will bind the rows together top to bottom using bind_rows(dataframes to bind)
-plain.df <-  
+plain.df <- bind_rows(left.df, right.df, center.df) 
   
 # now lets plot this
 plain.df %>% 
-  
+  ggplot(  aes(x=distance_m,   y=elevation_m  , color=name)) +
+  geom_line()
 
 # what is missing - some sort of mapping of shape or color to the name
   # copy the above and add in grouping value = ,color=XXXX
@@ -71,7 +73,15 @@ plain.df %>%
 #     name = "Name of legend title",
 #     labels = c("Center", "Left", "Right"),
 #     values = c("red", "green", "blue"))
-
+plain.df %>% 
+  ggplot(  aes(x=distance_m,   y=elevation_m  , color=name, shape = name)) +
+  geom_line() +
+  geom_point()+
+  scale_color_manual(
+    name = "Name of legend title",
+    labels = c("Center", "Left", "Right"),
+    values = c("red", "green", "blue")) +
+  theme_yourname()
 
 
 # now lets use ggThemeAssist to modify the graph to get all the factors changed
@@ -126,23 +136,23 @@ theme_yourname <- function(base_size = 16, base_family = "Sans")
 # Lets round to the nearest meter - we could also do to the 10s if we wanted
 
 plain.df <- plain.df %>% 
-  mutate(distance_m = XXXX (distance_m, XXX))
+  mutate(distance_m = round (distance_m, 0))
 
 # now lets make it by column or wide format
 plain_wide.df <- plain.df %>% 
   pivot_wider(
-    names_from = "XXXX",
-    values_from = "XXXX"
+    names_from = "name",
+    values_from = "elevation_m"
   )
 
 # note the names are a mess - lets fix that
-plain_wide.df <- plain_wide.df %>% # what does the jantor do??
+plain_wide.df <- plain_wide.df %>% clean_names()
 
 # what if we wanted to make it long again and get rid of na values
 plain_long.df <- plain_wide.df %>% 
-  pivot_longer(cols = c(x,y,z ),
-               names_to = "XXXX",
-               values_to = "XXXX")
+  pivot_longer(cols = c(starts_with("cottonwood")),
+               names_to = "name",
+               values_to = "elevation_m")
   
   
   
