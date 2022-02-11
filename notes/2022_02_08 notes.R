@@ -196,6 +196,10 @@ theme_yourname <- function(base_size = 16, base_family = "Sans")
 # shorter version
 # add + theme_yourname to the end of your plot summary
 
+plain.df %>%
+  ggplot(aes(x = distance_m, y = elevation_m, color = name)) +
+  geom_line() +
+  theme_yourname()
 
 
 # what if we wanted to make this a data set that has the left right center
@@ -216,16 +220,20 @@ plain_wide.df <- plain.df %>%
   )
 
 # note the names are a mess - lets fix that
-plain_wide.df <- plain_wide.df %>% # what does the jantor do??
+plain_wide.df <- plain_wide.df %>%
+  clean_names()# what does the jantor do??
   
   # what if we wanted to make it long again and get rid of na values
+# here we just put what we want the row values to come from and then in names to and values 
+# to we input what we want the column names to be 
   plain_long.df <- plain_wide.df %>% 
-  pivot_longer(cols = c(x,y,z ),
-               names_to = "XXXX",
-               values_to = "XXXX")
+  pivot_longer(cols = c(cottonwood_marble_canyon_l,
+                        cottonwood_marble_canyon_r, cottonwood_marble_canyon_c),
+               names_to = "location",
+               values_to = "value")
 
 
-
+plain_wide.df
 
 
 
