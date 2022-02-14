@@ -188,9 +188,46 @@ egg_long.df %>%
   stat_summary(fun = mean, na.rm = TRUE,
                geom = "point",
                size = 3, position = position_dodge(width=0.4)) + 
+  stat_summary(fun = mean, na.rm = TRUE,
+               geom = "line",
+               size = 1, position = position_dodge(width=0.4),
+               linetype = "dotted") + 
   stat_summary(fun.data = mean_se, na.rm = TRUE,
                geom = "errorbar",
                width = 0.2, position = position_dodge(width=0.4)) +
-  facet_wrap(~gene, scales = "free_y")
+  facet_wrap(~gene, scales = "free_y") +
+  labs(x = "Day", y = "Normalized AKR1D1 Expression (Mean ± 1 SE)") +
+  scale_color_manual(
+    name = "Treatment",
+    labels = c("Corticosterone", "Oil"),
+    values = c("blue", "red")
+  )
 
+
+# reorder the levels
+egg_long.df <-  egg_long.df %>% 
+  mutate(treatment = fct_relevel(treatment, "oil", "cort"))
+
+# what if you wanted just one?
+egg_long.df %>% 
+  filter(gene == "akr1d1_normalized") %>% 
+  ggplot(aes(sampling_day, value, color=treatment)) +
+  geom_point(position = position_dodge2(width=.5))+
+  stat_summary(fun = mean, na.rm = TRUE,
+               geom = "point",
+               size = 3, position = position_dodge(width=0.4)) + 
+  stat_summary(fun = mean, na.rm = TRUE,
+               geom = "line",
+               size = 1, position = position_dodge(width=0.4),
+               linetype = "dotted") + 
+  stat_summary(fun.data = mean_se, na.rm = TRUE,
+               geom = "errorbar",
+               width = 0.2, position = position_dodge(width=0.4)) +
+  facet_wrap(~gene, scales = "free_y") +
+  labs(x = "Day", y = "Normalized AKR1D1 Expression (Mean ± 1 SE)") +
+  scale_color_manual(
+    name = "Treatment",
+    labels = c("Oil", "Corticosterone"),
+    values = c("red", "blue" )
+  )
 
