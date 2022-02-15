@@ -210,7 +210,7 @@ egg_long.df <-  egg_long.df %>%
 
 # what if you wanted just one?
 egg_long.df %>% 
-  filter(gene == "akr1d1_normalized") %>% 
+  # filter(gene == "akr1d1_normalized") %>% 
   ggplot(aes(sampling_day, value, color=treatment)) +
   geom_point(position = position_dodge2(width=.5))+
   stat_summary(fun = mean, na.rm = TRUE,
