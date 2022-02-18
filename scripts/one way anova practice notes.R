@@ -49,7 +49,6 @@ full.df <- full.df %>%
 
 # its good practice to get familiar with moving data between wide and long format
 # the one we loaded in is already in wide so we call it wide 
-
 wide.df <- full.df
 
 # pivot wide to long
@@ -153,3 +152,31 @@ plot(egg.emm, comparisons = TRUE)
 egg.emminteraction <- emmeans(egg.emm, pairwise ~ treatment, adjust = "bonferroni")
 egg.emminteraction$emmeans
 egg.emminteraction$contrasts
+
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
+# NOW WHAT IF WE WANT TO PLOT EMMEANS? ----
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
+
+# NOT GONNA LIE, THERE IS KIND OF A LOT GOING ON HERE
+
+# from my understanding, which may be flawed, 
+# this line of code creates a file of integers from the emmeans
+egg.int = emmeans(egg.emm, pairwise ~ treatment, adjust = "bonferroni")
+
+# we then save these as a data frame
+emm.df <- as.data.frame(egg.int)
+
+# call the data frame, filter out the "." it seems to add by default,
+# plot the x axis for treatment and add color as treatment, 
+# we need to define the point as the emmean, 
+# we then add the error bars manually
+# we do it this way because the error and means have already been caluclated,
+# we just need to define them 
+emm.df %>%
+  filter(treatment != ".") %>%
+  ggplot(aes(x = treatment, color = treatment)) +
+  geom_point(aes(y = emmean)) +
+  geom_errorbar(aes(ymin = emmean-SE, ymax = emmean+SE), stat = "identity") +
+  expand_limits(y = 0)
+
+# the end :) 
