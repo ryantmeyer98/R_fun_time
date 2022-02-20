@@ -151,7 +151,7 @@ day.emminteraction$contrasts
 emm.int <- emmeans(acot.lm,  ~ treatment*day)
 emm.int
 
-contrast(emm.int, method = "pairwise", by = "day") 
+contrast(emm.int, method = "pairwise", by = "day", adjust="mvt") 
 
 
 
@@ -170,5 +170,5 @@ contrast <- list(
  # good - https://stackoverflow.com/questions/59813002/planned-contrasts-in-emmeans
 
 
-emm.int_long <- emmeans(acot.lm, list(~ treatment*day), contr=contrast, adjust = "holm")
+emm.int_long <- emmeans(emm.int, list(~ treatment*day), contr=contrast, adjust="mvt")
 emm.int_long
