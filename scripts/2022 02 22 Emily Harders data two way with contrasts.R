@@ -168,6 +168,7 @@ contrast <- list(
 # contrast(emm.int_long, contrast)
 
  # good - https://stackoverflow.com/questions/59813002/planned-contrasts-in-emmeans
+# https://stackoverflow.com/questions/59813002/planned-contrasts-in-emmeans
 
 
 emm.int_long <- emmeans(emm.int, list(~ treatment*day), contr=contrast, adjust="mvt")
