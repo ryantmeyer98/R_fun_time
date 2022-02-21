@@ -155,9 +155,9 @@ contrast(emm.int, method = "pairwise", by = "day", adjust="mvt")
 
 
 
-# manual method
-emm.int_long <- emmeans(acot.lm, ~ treatment*day)
-emm.int_long
+# # manual method
+# emm.int_long <- emmeans(acot.lm, ~ treatment*day)
+# emm.int_long
 
 contrast <- list(
   oil_cort_4  = c(-1,1,0,0,0,0,0,0),
@@ -165,15 +165,10 @@ contrast <- list(
   oil_cort_8  = c(0,0,0,0,-1,1,0,0),
   oil_cort_10 = c(0,0,0,0,0,0,-1,1))
 
-# contrast(emm.int_long, contrast)
+contrast(emm.int, contrast)
 
  # good - https://stackoverflow.com/questions/59813002/planned-contrasts-in-emmeans
 # https://stackoverflow.com/questions/59813002/planned-contrasts-in-emmeans
 
 
-
-
-emm.int_long <- emmeans(emm.int_long, list(~ treatment*day), contr=contrast, adjust="mvt")
-emm.int_long
-
-contrast(emm.int_long, contrasts=contrast, adjust="mvt") 
+# 
