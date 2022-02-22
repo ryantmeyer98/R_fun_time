@@ -6,11 +6,11 @@
 # GOING TO NEED TO INSTALL SOME NEW PACKAGES FOR THE GLM ----
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
 
-# new packages
-install.packages("car")
-install.packages("emmeans")
-install.packages("Hmisc")
-install.packages("multcompView")
+# new packages - run this code if you don't have these packages 
+# install.packages("car")
+# install.packages("emmeans")
+# install.packages("Hmisc")
+# install.packages("multcompView")
 
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
 # LOAD LIBRARIES ----
@@ -39,6 +39,7 @@ full.df <- read_csv("data/emily_harders/Emily_Rfuntime_7Feb22.csv") %>%
   clean_names() %>%
   remove_empty(which = c("cols", "rows"))
 
+# we need to change sampling day to a factor
 full.df <- full.df %>%
   mutate(sampling_day = as.factor(sampling_day))
 
@@ -81,23 +82,26 @@ long.df %>%
 
 # to make things simpler we are going to use filter to reduce this data sat to 
 # one metric from one day
-# we will use filter for rows and select for columns from both datasets
+# filter works with rows and select works with columns 
+# doing this in long and wide bc good practice 
 
 r_wide.df <- wide.df %>%
-  select(sampling_day, treatment, akr1d1_normalized) %>%
+  select(sampling_day, treatment, acot13_normalized) %>%
   filter(sampling_day == 4)
 
 r_long.df <- long.df %>%
   select(sampling_day, treatment, name, value) %>%
   filter(sampling_day == 4) %>%
-  filter(name == "akr1d1_normalized")
+  filter(name == "acot13_normalized")
 
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
 # ANOTHER QUICK VISUAL ----
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
 
+# after we reduce the dataset we want to take another look at it to see whats going on
+# this is mean and standard error with points so we can see dispersion
 r_wide.df %>%
-  ggplot(aes(x = treatment, y = akr1d1_normalized, color = treatment)) +
+  ggplot(aes(x = treatment, y = acot13_normalized, color = treatment)) +
   geom_point(position = position_dodge2(width = 0.1), shape = 5) +
   stat_summary(fun = "mean", geom = "point", position = position_dodge2(width = 0.5)) +
   stat_summary(fun.data = "mean_se", geom = "errorbar", width = 0.5, 
@@ -107,14 +111,36 @@ r_wide.df %>%
 # STATS ----
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
 
-# Ho: the difference in population means between cort and oil treatments is equal to 0
+# Ho: the difference in population means between cort and oil is equal to 0
 
 # assumptions - the ones that we will test for anyway
-# variance is homogenous
-# residuals are normal
+# variance is homogenous - shaprio wilk or visual
+# residuals are normal (w/in your treatments) - levene, bartlett, or visual
+
+# MAKE YOUR LINEAR MODEL ----
 
 # the first thing we need to do is create our model
-egg.lm <- lm(value ~ treatment, data = r_long.df)
+# you'll notice this is a little different than what we did in class because
+# in class we used wide format and here I use long format
+acot.lm <- lm(value ~ treatment, data = r_long.df)
+
+# STATISTICAL TESTS FOR ASSUMPTIONS ----
+
+# statistical test for homogeneity of variance
+bartlett.test(value ~ treatment, data = r_long.df)
+
+shapiro.test(acot.lm$residuals)
+
+# VISUAL TESTS FOR ASSUMPTIONS ----
+
+# visual test for normality
+qqPlot(acot.lm$residuals)
+
+par(mfrow=c(2,2))
+plot(acot.lm)
+
+
+# A DIFFERENT WAY TO VISUALLY LOOK AT ASSUMPTIONS ----
 
 # now we resist the urge to go straight for the results and test the assumptions
 # this code calculates the residuals from the model
@@ -127,8 +153,10 @@ plot(fitted(egg.lm), residuals)
 qqnorm(residuals)
 qqline(residuals)
 
+# RUNNING THE ANOVA ----
+
 # our data look fine so now we run the anova, design is balanced for what we have so type 3
-Anova(egg.lm, type = "3")
+Anova(acot.lm, type = "3")
 
 # treatment is not significant, fail to reject Ho
 # Response: value
@@ -144,14 +172,16 @@ Anova(egg.lm, type = "3")
 # we don't have a significant difference here, but if we want to do post hoc tests here is how
 # use the package emmeans, which SAS calls lsmeans 
 
-# create a model for the emmeans
-egg.emm <- emmeans(egg.lm, ~ treatment)
+# create a model for the emmeans, then put in what we want in the model 
+acot.emm <- emmeans(acot.lm, ~ treatment)
+
 # plot the emmeans - if they arrows overlap fail to reject Ho
-plot(egg.emm, comparisons = TRUE)
+plot(acot.emm, comparisons = TRUE)
+
 # this creates a model to do interactions and impliment p-value adjustment
-egg.emminteraction <- emmeans(egg.emm, pairwise ~ treatment, adjust = "bonferroni")
-egg.emminteraction$emmeans
-egg.emminteraction$contrasts
+acot.emminteraction <- emmeans(acot.emm, pairwise ~ treatment, adjust = "bonferroni")
+acot.emminteraction$emmeans
+acot.emminteraction$contrasts
 
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
 # NOW WHAT IF WE WANT TO PLOT EMMEANS? ----
@@ -159,12 +189,8 @@ egg.emminteraction$contrasts
 
 # NOT GONNA LIE, THERE IS KIND OF A LOT GOING ON HERE
 
-# from my understanding, which may be flawed, 
-# this line of code creates a file of integers from the emmeans
-egg.int = emmeans(egg.emm, pairwise ~ treatment, adjust = "bonferroni")
-
-# we then save these as a data frame
-emm.df <- as.data.frame(egg.int)
+# we create a data frame from the interaction file we made 
+emm.df <- as.data.frame(egg.emminteraction)
 
 # call the data frame, filter out the "." it seems to add by default,
 # plot the x axis for treatment and add color as treatment, 
@@ -180,3 +206,5 @@ emm.df %>%
   expand_limits(y = 0)
 
 # the end :) 
+# is there a difference between summary(aov) or Anova(blah blah blah)
+# ANCOVA
