@@ -150,6 +150,9 @@ summary(manova.model, multivariate=TRUE)
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
 # Univariate tests ------
 
+summary(Anova(manova.model), univariate=TRUE, multivariate=FALSE,
+        p.adjust.method=TRUE)
+
 # Univariate ANOVAS ----
 # Look to see which differ
 summary.aov(manova.model)
