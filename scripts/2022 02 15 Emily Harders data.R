@@ -204,6 +204,8 @@ egg_long.df %>%
   )
 
 
+
+
 # reorder the levels
 egg_long.df <-  egg_long.df %>% 
   mutate(treatment = fct_relevel(treatment, "oil", "cort"))
