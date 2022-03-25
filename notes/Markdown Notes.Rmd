@@ -1,0 +1,65 @@
+---
+title: "R markdown notes"
+author:
+- affiliation: R fun time!
+  affiliation_url: https://rmd4pharma.netlify.app/static/slides/02-output-tables.html#1
+  name: Author?!?!?!
+date: '2022-03-22'
+output:   
+  html_document:
+    toc: true
+    toc_float: true
+    theme: flatly
+  distill::distill_article:
+    toc: true
+  word_document:
+    toc: true
+  pdf_document: default
+description: |
+  Here are some notes on how to use markdown with examples
+---
+## above here is the metadata...in the .Rmd file
+pound sign defines a header
+
+## settings for the file
+by changing inclue to false it will hide this code 
+```{r setup, include=TRUE}
+knitr::opts_chunk$set(
+  echo = FALSE,
+  warning = FALSE,
+  message = FALSE,
+  comment = NA)
+```
+
+# big header
+## smaller header
+### even smaller header
+
+you can set the output to basically anything from a pdf to a ppt, you just define these in the output settings 
+
+# making a list
+dash before text makes a list
+
+- tile = title,
+- author = defines aithors with affiliations and a url for the author,
+- date = date,
+- output = the output options that you will knit to
+  - toc = table of contents,
+  - toc float = where the table of contents will go,
+  - theme = how the file will look,
+  - distill::distill_article: = specific formatting for html files 
+    - the further you tab over
+      - means you can make
+        - sub
+          - points
+
+# Notes from markdown part 2
+
+# note for ryan put stuff here for code and such
+```{r}
+
+```
+
+
+
+
