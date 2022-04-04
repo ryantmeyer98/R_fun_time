@@ -12,9 +12,10 @@ output:
     theme: flatly
   distill::distill_article:
     toc: true
+  pdf_document: default
   word_document:
     toc: true
-  pdf_document: default
+  bookdown::word_document2: default
 description: |
   Here are some notes on how to use markdown with examples
 ---
@@ -25,15 +26,17 @@ pound sign defines a header
 by changing inclue to false it will hide this code 
 ```{r setup, include=TRUE}
 knitr::opts_chunk$set(
-  echo = FALSE,
-  warning = FALSE,
-  message = FALSE,
-  comment = NA)
+	echo = TRUE,
+	message = FALSE,
+	warning = FALSE,
+	comment = NA
+)
 ```
 
 # big header
 ## smaller header
 ### even smaller header
+text in here is just text in the body of your document 
 
 you can set the output to basically anything from a pdf to a ppt, you just define these in the output settings 
 
@@ -47,19 +50,68 @@ dash before text makes a list
   - toc = table of contents,
   - toc float = where the table of contents will go,
   - theme = how the file will look,
-  - distill::distill_article: = specific formatting for html files 
+  - distill::distill_article: = specific formatting for html files, bookdown is just a dif way of formatting 
     - the further you tab over
       - means you can make
         - sub
           - points
-
-# Notes from markdown part 2
-
-# note for ryan put stuff here for code and such
-```{r}
-
+```{r echo=TRUE}
+#libraries
+library(tidyverse)
+library(patchwork)
 ```
 
+# making a figure caption
+```{r echo=TRUE}
+cap <- "caption"
+```
 
+# here is an example of some code you can put in (hotkey: cmd+option+i)
+```{r name, echo=TRUE, fig.cap= cap}
+cty.plot <- ggplot(mpg, aes(cty)) +
+  geom_histogram(bins = 25) +
+  theme_light()
+cty.plot
+```
+
+```{r echo=TRUE}
+hwy.plot <- ggplot(mpg, aes(hwy)) +
+  geom_histogram(bins = 25) +
+  theme_light()
+hwy.plot
+```
+
+Figure \@ref(fig:name) !!!
+
+# GRAPHICS
+some graphics setting 
+```{r echo=TRUE}
+# some options for how you output things
+# fig.retina=x 
+# out.width=x%
+# fig.width/fig.height/fig.asp
+# you can also use ggsave here to manually define things within ggsave
+# external image
+# knitr::include_graphics(here::here("location/name of image.jpg"))
+```
+
+# putting figures together
+```{r}
+# one way
+plot_grid(cty.plot, hwy.plot, labels = "AUTO", ncol = 1)
+#another way using patchwork 
+cty.plot + hwy.plot
+```
+
+# saving figures 
+```{r save plot, fig.path = "figures/", echo = TRUE}
+# option to save a plot above 
+displ.plot <- ggplot(mpg, aes(displ)) +
+  geom_histogram(bins = 25) +
+  theme_light()
+displ.plot
+
+# using ggsave 
+```
 
 
