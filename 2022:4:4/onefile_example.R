@@ -3,7 +3,7 @@ library(readxl)
 library(purrr)
 
 # 
-e.df <- read_excel("ecoplates/block1_CR_0-2_10182021.xlsx") %>% 
+e.df <- read_excel("2022:4:4/block2_CR_0-2_10172021.xlsx") %>% 
   select(-14) %>% 
   rename(letter = 1)
 
