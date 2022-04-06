@@ -215,7 +215,42 @@ eco_long.df <- eco_long.df %>%
 eco_long.df <- eco_long.df %>% 
   group_by(set) %>% 
   mutate(water_corr = abs - abs[well == 'water'] )
- 
 
 ```
+
+
+
+```{r}
+
+# make negative values 0 ---
+
+eco_long.df <- eco_long.df %>% 
+  group_by(set) %>% 
+  mutate(water_corr_new = if_else(water_corr < 0, 0, water_corr))
+
+```
+
+
+```{r}
+
+# make a summary ---
+
+eco_long_summary.df <- eco_long.df %>% 
+  group_by(well) %>% 
+  summarize(mean_water_corr = mean(water_corr_new, na.rm = TRUE))
+
+```
+
+```{r}
+eco.df <- tibble(filename = files) %>%
+  mutate(
+    file.contents = map(
+      filename, 
+      ~ read_excel(file.path(data_path, .))))
+```
+
+
+
+
+
 
