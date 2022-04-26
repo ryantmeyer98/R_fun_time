@@ -1,0 +1,55 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+
+```{r}
+library(tidyverse)
+library(readxl)
+library(car)
+library(emmeans)
+
+```
+
+
+```{r}
+lob.df <- read_excel("data/sydney_metternich/lob data.xlsx", 
+    sheet = "For SAS")
+```
+
+
+response variable
+agbio
+
+main effect are
+soilst
+soilpop
+gardenst
+popseed
+seedst
+
+```{r}
+agbio.model <- lm(agbio ~ soilst, data = lob.df)
+Anova(agbio.model, Type="III")
+```
+
+```{r}
+
+# Post F tests
+# Comparisons of species
+lsm = emmeans(agbio.model, 
+              "soilst",
+              adjust="tukey")
+```
+
+
+```{r}
+### Means sharing a letter in .group are not significantly different
+#Note that this requires multcompView
+multcomp::cld(lsm,
+    alpha=.05,
+    Letters=letters)
+
+```
+
