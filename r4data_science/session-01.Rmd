@@ -1,0 +1,71 @@
+---
+title: "R 4 data science: session-01"
+date: "`r format(Sys.time(), '%B %d %Y')`"
+output: 
+  bookdown::html_document2:
+    toc: true
+    code_folding: "show" 
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+- Check which package is installed and install it if needed:
+
+```{r}
+required_packages <- c("tidyverse", "nycflights13")
+
+# prepare output:
+check_package_installation <- vector(
+  "logical",
+  length = length(required_packages)
+)
+names(check_package_installation) <- required_packages
+
+# Check if package is intalled:
+for (pkg in required_packages) {
+  tmp <- find.package(pkg, quiet = TRUE)
+  check_package_installation[pkg] <- ifelse(length(tmp) == 0, FALSE, TRUE)
+}
+
+# Install missing packages:
+missing_packages <- names(check_package_installation)[check_package_installation == FALSE]
+install.packages(missing_packages)
+```
+
+```{r load-packages, include = FALSE}
+library(tidyverse)
+library(nycflights13)
+```
+
+
+# Explore
+
+## Introduction
+
+- No exercise here
+
+## Data visualisation
+
+```{r}
+mpg
+```
+
+## Workflow: basics 
+
+- no exercises here
+
+## Data transformation 
+
+
+
+```{r}
+flights
+```
+
+- See data documentation:
+
+```{r}
+?flights
+```
